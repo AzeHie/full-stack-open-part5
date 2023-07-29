@@ -5,18 +5,30 @@ import userService from './services/users';
 
 import './App.css';
 import CreateBlog from './components/CreateBlog';
+import Notification from './shared/Notification';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState();
+  const [notificationStyles, setNotificationStyles] = useState();
 
   const fetchBlogs = async () => {
     const loadedBlogs = await blogService.getAll();
 
     setBlogs(loadedBlogs);
   };
+
+  const newNotification = (message, styles) => {
+    setNotificationMessage(message);
+    setNotificationStyles(styles);
+    setTimeout(() => {
+      setNotificationMessage(null);
+      setNotificationStyles(null);
+    }, 5000)
+  }
 
   useEffect(() => {
     fetchBlogs();
@@ -41,23 +53,26 @@ const App = () => {
       
       blogService.setToken(userLogin.token);
       setUser(userLogin);
+      newNotification('Logged in!', 'success');
       setPassword('');
       setUsername('');
     } catch (exception) {
+      newNotification('Failed to log in!', 'error');
       console.log(exception);
-      throw new Error('login failed');
     }
   };
 
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('loggedUser');
+    newNotification('Logged out!', 'success');
   };
 
   if (!user) {
     return (
       <div>
         <h2>Log in to application</h2>
+        <Notification message={notificationMessage} styles={notificationStyles}/>
         <form onSubmit={handleLogin}>
           <div className='login__inputs'>
             <label htmlFor='username'>Username:</label>
@@ -88,9 +103,10 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      <Notification message={notificationMessage} styles={notificationStyles}/>
       <span>{user.name} logged in</span>
       <button onClick={handleLogout}>Logout</button>
-      <CreateBlog fetchBlogs={fetchBlogs}/>
+      <CreateBlog fetchBlogs={fetchBlogs} newNotification={newNotification}/>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
