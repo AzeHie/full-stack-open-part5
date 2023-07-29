@@ -3,7 +3,7 @@ import blogService from '../services/blogs';
 
 import './CreateBlog.css';
 
-const CreateBlog = ({ fetchBlogs, newNotification }) => {
+const CreateBlog = ({ fetchBlogs, newNotification, toggleVisibility }) => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
@@ -20,7 +20,11 @@ const CreateBlog = ({ fetchBlogs, newNotification }) => {
     try {
       await blogService.createBlog(newBlog);
       fetchBlogs();
+      toggleVisibility();
       newNotification('New blog created!', 'success');
+      setTitle('');
+      setAuthor('');
+      setUrl('');
     } catch (exception) {
       console.log(exception);
       newNotification('Creating a new blog failed!', 'error');

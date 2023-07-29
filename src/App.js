@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import userService from './services/users';
@@ -6,8 +6,10 @@ import userService from './services/users';
 import './App.css';
 import CreateBlog from './components/CreateBlog';
 import Notification from './shared/Notification';
+import Togglable from './shared/Togglable';
 
 const App = () => {
+  const blogFormRef = useRef();
   const [blogs, setBlogs] = useState([]);
   const [user, setUser] = useState();
   const [username, setUsername] = useState('');
@@ -106,7 +108,9 @@ const App = () => {
       <Notification message={notificationMessage} styles={notificationStyles}/>
       <span>{user.name} logged in</span>
       <button onClick={handleLogout}>Logout</button>
-      <CreateBlog fetchBlogs={fetchBlogs} newNotification={newNotification}/>
+      <Togglable buttonLabel="Create blog" ref={blogFormRef} >
+        <CreateBlog fetchBlogs={fetchBlogs} newNotification={newNotification} toggleVisibility={() => blogFormRef.current.toggleVisibility()}/>
+      </Togglable>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
