@@ -4,6 +4,7 @@ import blogService from './services/blogs';
 import userService from './services/users';
 
 import './App.css';
+import CreateBlog from './components/CreateBlog';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -11,12 +12,13 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      const loadedBlogs = await blogService.getAll();
+  const fetchBlogs = async () => {
+    const loadedBlogs = await blogService.getAll();
 
-      setBlogs(loadedBlogs);
-    };
+    setBlogs(loadedBlogs);
+  };
+
+  useEffect(() => {
     fetchBlogs();
   }, []);
 
@@ -25,6 +27,7 @@ const App = () => {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
+      blogService.setToken(user.token);
     }
   }, []);
 
@@ -34,9 +37,10 @@ const App = () => {
     try {
       const userLogin = await userService.login(username, password);
 
-      setUser(userLogin);
       localStorage.setItem('loggedUser', JSON.stringify(userLogin));
-
+      
+      blogService.setToken(userLogin.token);
+      setUser(userLogin);
       setPassword('');
       setUsername('');
     } catch (exception) {
@@ -86,6 +90,7 @@ const App = () => {
       <h2>blogs</h2>
       <span>{user.name} logged in</span>
       <button onClick={handleLogout}>Logout</button>
+      <CreateBlog fetchBlogs={fetchBlogs}/>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
