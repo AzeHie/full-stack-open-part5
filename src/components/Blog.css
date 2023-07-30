@@ -1,0 +1,11 @@
+.blog__title,
+.blog__all-details {
+  border: 1px solid purple;
+  margin: 2px;
+  padding: 2px;
+}
+
+.blog__all-details {
+  display: flex;
+  flex-direction: column;
+}
