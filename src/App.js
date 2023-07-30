@@ -7,6 +7,7 @@ import './App.css';
 import CreateBlog from './components/CreateBlog';
 import Notification from './shared/Notification';
 import Togglable from './shared/Togglable';
+import { newNotification } from './shared/utils/NotificationUtils';
 
 const App = () => {
   const blogFormRef = useRef();
@@ -22,15 +23,6 @@ const App = () => {
 
     setBlogs(loadedBlogs);
   };
-
-  const newNotification = (message, styles) => {
-    setNotificationMessage(message);
-    setNotificationStyles(styles);
-    setTimeout(() => {
-      setNotificationMessage(null);
-      setNotificationStyles(null);
-    }, 5000)
-  }
 
   useEffect(() => {
     fetchBlogs();
@@ -55,11 +47,11 @@ const App = () => {
       
       blogService.setToken(userLogin.token);
       setUser(userLogin);
-      newNotification('Logged in!', 'success');
+      newNotification('Logged in!', 'success', setNotificationMessage, setNotificationStyles);
       setPassword('');
       setUsername('');
     } catch (exception) {
-      newNotification('Failed to log in!', 'error');
+      newNotification('Failed to log in!', 'error', setNotificationMessage, setNotificationStyles);
       console.log(exception);
     }
   };
@@ -112,7 +104,7 @@ const App = () => {
         <CreateBlog fetchBlogs={fetchBlogs} newNotification={newNotification} toggleVisibility={() => blogFormRef.current.toggleVisibility()}/>
       </Togglable>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} fetchBlogs={fetchBlogs}/>
       ))}
     </div>
   );

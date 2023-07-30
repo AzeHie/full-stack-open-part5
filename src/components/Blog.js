@@ -1,9 +1,34 @@
 import { Fragment, useState } from 'react';
 
 import './Blog.css';
+import Notification from '../shared/Notification';
+import { newNotification } from '../shared/utils/NotificationUtils';
+import blogService from '../services/blogs';
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, fetchBlogs }) => {
   const [showDetails, setShowDetails] = useState(false);
+  const [notificationMessage, setNotificationMessage] = useState();
+  const [notificationStyles, setNotificationStyles] = useState();
+
+  const handleNewLike = async () => {
+    const newBlog = {
+      ...blog,
+      user: blog.user._id,
+      likes: blog.likes + 1,
+    };
+
+    try {
+      await blogService.editBlog(newBlog);
+      fetchBlogs();
+    } catch (exception) {
+      newNotification(
+        'Failed to add new like!',
+        'error',
+        setNotificationMessage,
+        setNotificationStyles
+      );
+    }
+  };
 
   return (
     <Fragment>
@@ -21,6 +46,7 @@ const Blog = ({ blog }) => {
       )}
       {showDetails && (
         <div className='blog__all-details'>
+          <Notification message={notificationMessage} styles={notificationStyles} />
           <span>
             Title: {blog.title}
             <button
@@ -34,7 +60,7 @@ const Blog = ({ blog }) => {
           <span>Url: {blog.url}</span>
           <span>
             Likes: {blog.likes}
-            <button>like</button>
+            <button onClick={handleNewLike}>like</button>
           </span>
           <span>Author: {blog.author}</span>
         </div>
