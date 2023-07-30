@@ -1,19 +1,15 @@
 import { Fragment, useState } from 'react';
 
-import './Blog.css';
-import Notification from '../shared/Notification';
-import { newNotification } from '../shared/utils/NotificationUtils';
 import blogService from '../services/blogs';
+import './Blog.css';
 
-const Blog = ({ blog, fetchBlogs }) => {
+const Blog = ({ blog, fetchBlogs, newNotification, user }) => {
   const [showDetails, setShowDetails] = useState(false);
-  const [notificationMessage, setNotificationMessage] = useState();
-  const [notificationStyles, setNotificationStyles] = useState();
 
   const handleNewLike = async () => {
     const newBlog = {
       ...blog,
-      user: blog.user._id,
+      user: blog.user.id,
       likes: blog.likes + 1,
     };
 
@@ -21,14 +17,32 @@ const Blog = ({ blog, fetchBlogs }) => {
       await blogService.editBlog(newBlog);
       fetchBlogs();
     } catch (exception) {
-      newNotification(
-        'Failed to add new like!',
-        'error',
-        setNotificationMessage,
-        setNotificationStyles
-      );
+      newNotification('Failed to add new like!', 'error');
     }
   };
+
+  const handleRemove = async () => {
+    const confirmation = window.confirm(
+      `Are you sure you want to remove blog ${blog.title} by ${blog.author}`
+    );
+
+    if (confirmation) {
+      try {
+        await blogService.removeBlog(blog.id);
+        newNotification('Blog removed Successfully', 'success');
+        fetchBlogs();
+      } catch (exception) {
+        newNotification('Removing the blog failed!', 'error');
+      }
+    }
+  };
+
+  const removeBtn =
+    blog.user.username === user.username ? (
+      <button className='blog__remove-button' onClick={handleRemove}>
+        Remove
+      </button>
+    ) : null;
 
   return (
     <Fragment>
@@ -46,7 +60,6 @@ const Blog = ({ blog, fetchBlogs }) => {
       )}
       {showDetails && (
         <div className='blog__all-details'>
-          <Notification message={notificationMessage} styles={notificationStyles} />
           <span>
             Title: {blog.title}
             <button
@@ -63,6 +76,7 @@ const Blog = ({ blog, fetchBlogs }) => {
             <button onClick={handleNewLike}>like</button>
           </span>
           <span>Author: {blog.author}</span>
+          {removeBtn}
         </div>
       )}
     </Fragment>

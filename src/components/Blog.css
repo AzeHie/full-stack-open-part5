@@ -9,3 +9,10 @@
   display: flex;
   flex-direction: column;
 }
+
+.blog__remove-button {
+  width: 25%;
+  background: rgb(100, 0, 0);
+  color: white;
+  cursor: pointer;
+}

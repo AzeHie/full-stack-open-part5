@@ -3,11 +3,10 @@ import Blog from './components/Blog';
 import blogService from './services/blogs';
 import userService from './services/users';
 
-import './App.css';
 import CreateBlog from './components/CreateBlog';
 import Notification from './shared/Notification';
 import Togglable from './shared/Togglable';
-import { newNotification } from './shared/utils/NotificationUtils';
+import './App.css';
 
 const App = () => {
   const blogFormRef = useRef();
@@ -18,8 +17,19 @@ const App = () => {
   const [notificationMessage, setNotificationMessage] = useState();
   const [notificationStyles, setNotificationStyles] = useState();
 
+  const newNotification = (message, styles) => {
+    setNotificationMessage(message);
+    setNotificationStyles(styles);
+    setTimeout(() => {
+      setNotificationMessage(null);
+      setNotificationStyles(null);
+    }, 3000)
+  }
+
   const fetchBlogs = async () => {
     const loadedBlogs = await blogService.getAll();
+
+    loadedBlogs.sort((a,b) => b.likes - a.likes);
 
     setBlogs(loadedBlogs);
   };
@@ -101,10 +111,10 @@ const App = () => {
       <span>{user.name} logged in</span>
       <button onClick={handleLogout}>Logout</button>
       <Togglable buttonLabel="Create blog" ref={blogFormRef} >
-        <CreateBlog fetchBlogs={fetchBlogs} newNotification={newNotification} toggleVisibility={() => blogFormRef.current.toggleVisibility()}/>
+        <CreateBlog fetchBlogs={fetchBlogs} toggleVisibility={() => blogFormRef.current.toggleVisibility()} newNotification={newNotification}/>
       </Togglable>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} fetchBlogs={fetchBlogs}/>
+        <Blog key={blog.id} blog={blog} fetchBlogs={fetchBlogs} newNotification={newNotification} user={user}/>
       ))}
     </div>
   );
