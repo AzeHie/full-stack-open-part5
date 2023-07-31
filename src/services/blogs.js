@@ -25,7 +25,11 @@ const createBlog = async (newObject) => {
 };
 
 const editBlog = async (newBlog) => {
-  const response = await axios.put(`${baseUrl}/${newBlog.id}`, newBlog, getConfig());
+  const response = await axios.put(
+    `${baseUrl}/${newBlog.id}`,
+    newBlog,
+    getConfig()
+  );
   return response.data;
 };
 
@@ -34,5 +38,4 @@ const removeBlog = async (blogId) => {
   return response.data;
 };
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default { getAll, createBlog, setToken, editBlog, removeBlog };

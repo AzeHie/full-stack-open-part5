@@ -23,13 +23,13 @@ const App = () => {
     setTimeout(() => {
       setNotificationMessage(null);
       setNotificationStyles(null);
-    }, 3000)
-  }
+    }, 3000);
+  };
 
   const fetchBlogs = async () => {
     const loadedBlogs = await blogService.getAll();
 
-    loadedBlogs.sort((a,b) => b.likes - a.likes);
+    loadedBlogs.sort((a, b) => b.likes - a.likes);
 
     setBlogs(loadedBlogs);
   };
@@ -54,14 +54,24 @@ const App = () => {
       const userLogin = await userService.login(username, password);
 
       localStorage.setItem('loggedUser', JSON.stringify(userLogin));
-      
+
       blogService.setToken(userLogin.token);
       setUser(userLogin);
-      newNotification('Logged in!', 'success', setNotificationMessage, setNotificationStyles);
+      newNotification(
+        'Logged in!',
+        'success',
+        setNotificationMessage,
+        setNotificationStyles
+      );
       setPassword('');
       setUsername('');
     } catch (exception) {
-      newNotification('Failed to log in!', 'error', setNotificationMessage, setNotificationStyles);
+      newNotification(
+        'Failed to log in!',
+        'error',
+        setNotificationMessage,
+        setNotificationStyles
+      );
       console.log(exception);
     }
   };
@@ -76,7 +86,10 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        <Notification message={notificationMessage} styles={notificationStyles}/>
+        <Notification
+          message={notificationMessage}
+          styles={notificationStyles}
+        />
         <form onSubmit={handleLogin}>
           <div className='login__inputs'>
             <label htmlFor='username'>Username:</label>
@@ -107,14 +120,24 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      <Notification message={notificationMessage} styles={notificationStyles}/>
+      <Notification message={notificationMessage} styles={notificationStyles} />
       <span>{user.name} logged in</span>
       <button onClick={handleLogout}>Logout</button>
-      <Togglable buttonLabel="Create blog" ref={blogFormRef} >
-        <CreateBlog fetchBlogs={fetchBlogs} toggleVisibility={() => blogFormRef.current.toggleVisibility()} newNotification={newNotification}/>
+      <Togglable buttonLabel='Create blog' ref={blogFormRef}>
+        <CreateBlog
+          fetchBlogs={fetchBlogs}
+          toggleVisibility={() => blogFormRef.current.toggleVisibility()}
+          newNotification={newNotification}
+        />
       </Togglable>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} fetchBlogs={fetchBlogs} newNotification={newNotification} user={user}/>
+        <Blog
+          key={blog.id}
+          blog={blog}
+          fetchBlogs={fetchBlogs}
+          newNotification={newNotification}
+          user={user}
+        />
       ))}
     </div>
   );
