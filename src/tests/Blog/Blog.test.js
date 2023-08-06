@@ -51,9 +51,8 @@ describe('<Blog />', () => {
 
   test('when like button is clicked, handler function is called', async () => {
     const mockHandler = jest.fn();
-    const mockNotification = jest.fn();
 
-    render(<Blog blog={blog} user={user} handleNewLike={mockHandler} newNotification={mockNotification}/>);
+    render(<Blog blog={blog} user={user} handleNewLike={mockHandler} />);
 
     const userInstance = userEvent.setup();
 
