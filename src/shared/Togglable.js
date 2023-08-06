@@ -12,6 +12,7 @@ const Togglable = forwardRef((props, ref) => {
     setVisible(!visible);
   };
 
+  // to expose toggleVisibility to the parent component using ref. Allows parent to directly call toggleVisibility
   useImperativeHandle(ref, () => {
     return {
       toggleVisibility,

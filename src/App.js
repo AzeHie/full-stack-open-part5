@@ -113,6 +113,17 @@ const App = () => {
     }
   };
 
+  const handleCreateBlog = async (newBlog) => {
+    try {
+      await blogService.createBlog(newBlog);
+      fetchBlogs();
+      newNotification('New blog created!', 'success');
+    } catch (exception) {
+      console.log(exception);
+      newNotification('Creating a new blog failed!', 'error');
+    }
+  };
+
   if (!user) {
     return (
       <div>
@@ -156,9 +167,8 @@ const App = () => {
       <button onClick={handleLogout}>Logout</button>
       <Togglable buttonLabel='Create blog' ref={blogFormRef}>
         <CreateBlog
-          fetchBlogs={fetchBlogs}
+          handleCreateBlog={handleCreateBlog}
           toggleVisibility={() => blogFormRef.current.toggleVisibility()}
-          newNotification={newNotification}
         />
       </Togglable>
       {blogs.map((blog) => (

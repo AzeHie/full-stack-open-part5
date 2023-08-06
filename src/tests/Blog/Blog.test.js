@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Blog from '../../components/Blog';
 import blogService from '../../services/blogs';
+import CreateBlog from '../../components/CreateBlog';
 jest.mock('../../services/blogs');
 
 
@@ -64,5 +65,31 @@ describe('<Blog />', () => {
     await userInstance.click(likeButton);
 
     expect(mockHandler).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('<CreateBlog />', () => {
+  test('handleCreateBlog is called with correct data', async () => {
+    const handleCreateBlog = jest.fn();
+    const toggleVisibility = jest.fn();
+
+    const { container } = render(<CreateBlog handleCreateBlog={handleCreateBlog} toggleVisibility={toggleVisibility}/>);
+
+    const titleInput = container.querySelector('#title-input');
+    const authorInput = container.querySelector('#author-input');
+    const urlInput = container.querySelector('#url-input');
+    const createButton = screen.getByText('Create');
+
+    await userEvent.type(titleInput, 'testing blog creation');
+    await userEvent.type(authorInput, 'test author');
+    await userEvent.type(urlInput, 'randomurlhere');
+    await userEvent.click(createButton);
+
+    expect(handleCreateBlog).toHaveBeenCalledTimes(1);
+    expect(handleCreateBlog).toHaveBeenCalledWith({
+      title: 'testing blog creation',
+      author: 'test author',
+      url: 'randomurlhere'
+    });
   });
 });
