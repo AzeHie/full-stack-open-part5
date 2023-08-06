@@ -82,6 +82,37 @@ const App = () => {
     newNotification('Logged out!', 'success');
   };
 
+  const handleNewLike = async (blog) => {
+    const newBlog = {
+      ...blog,
+      user: blog.user.id,
+      likes: blog.likes + 1,
+    };
+
+    try {
+      await blogService.editBlog(newBlog);
+      fetchBlogs();
+    } catch (exception) {
+      newNotification('Failed to add new like!', 'error');
+    }
+  };
+
+  const handleRemove = async (blog) => {
+    const confirmation = window.confirm(
+      `Are you sure you want to remove blog ${blog.title} by ${blog.author}`
+    );
+
+    if (confirmation) {
+      try {
+        await blogService.removeBlog(blog.id);
+        newNotification('Blog removed Successfully', 'success');
+        fetchBlogs();
+      } catch (exception) {
+        newNotification('Removing the blog failed!', 'error');
+      }
+    }
+  };
+
   if (!user) {
     return (
       <div>
@@ -134,8 +165,8 @@ const App = () => {
         <Blog
           key={blog.id}
           blog={blog}
-          fetchBlogs={fetchBlogs}
-          newNotification={newNotification}
+          handleRemove={handleRemove}
+          handleNewLike={handleNewLike}
           user={user}
         />
       ))}
