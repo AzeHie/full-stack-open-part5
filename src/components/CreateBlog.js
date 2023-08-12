@@ -51,7 +51,7 @@ const CreateBlog = ({ handleCreateBlog, toggleVisibility }) => {
           id='url-input'
           onChange={({ target }) => setUrl(target.value)}
         />
-        <button type='submit'>Create</button>
+        <button type='submit' id='create-button'>Create</button>
       </form>
     </div>
   );
