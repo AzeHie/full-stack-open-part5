@@ -60,10 +60,35 @@ describe('Blog app', function () {
           author: 'Cypress',
           url: 'randomtesturli',
         });
+
+        cy.createBlog({
+          title: 'second random',
+          author: 'Cypress again',
+          url: 'randomurlagain',
+        });
       });
 
       it('Blog can be liked', function () {
-        //...
+        const blogTitle = 'second random';
+
+        cy.contains(blogTitle).contains('View').click();
+
+        cy.contains(blogTitle)
+          .parent()
+          .within(() => {
+            cy.contains('Likes: 0');
+            cy.contains('like').click();
+            cy.contains('Likes: 1');
+          });
+      });
+
+      it('Blog can be removed by user who added it', function () {
+        const blogTitle = 'second random';
+
+        cy.contains(blogTitle).contains('View').click();
+        cy.contains(blogTitle).parent().contains('Remove').click();
+        cy.wait(1000);
+        cy.contains(blogTitle).should('not.exist');
       });
     });
   });
