@@ -56,17 +56,24 @@ describe('Blog app', function () {
     describe('and a blog exists', function () {
       beforeEach(function () {
         cy.createBlog({
-          title: 'random test title',
+          title: 'first random',
           author: 'Cypress',
-          url: 'randomtesturli',
+          url: 'randomtesturli'
         });
 
         cy.createBlog({
           title: 'second random',
           author: 'Cypress again',
-          url: 'randomurlagain',
+          url: 'randomurlagain'
+        });
+
+        cy.createBlog({
+          title: 'third random',
+          author: 'still cypress',
+          url: 'randomurliapukkaa'
         });
       });
+
 
       it('Blog can be liked', function () {
         const blogTitle = 'second random';
@@ -91,7 +98,7 @@ describe('Blog app', function () {
         cy.contains(blogTitle).should('not.exist');
       });
 
-      it.only('Remove button is visible only for the user who added the blog', function () {
+      it('Remove button is visible only for the user who added the blog', function () {
         cy.contains('Logout').click();
 
         const secondUser = {
@@ -108,6 +115,30 @@ describe('Blog app', function () {
 
         cy.contains(blogTitle).contains('View').click();
         cy.contains(blogTitle).parent().contains('Remove').should('not.exist');
+      });
+
+      it.only('Blogs ordered correctly by likes', function () {
+        const firstBlog = 'first random';
+        const secondBlog = 'second random';
+        const thirdBlog = 'third random';
+
+        cy.contains(firstBlog).contains('View').click();
+        cy.contains(secondBlog).contains('View').click();
+        cy.contains(thirdBlog).contains('View').click();
+        
+        cy.contains(thirdBlog).parent().contains('like').click();
+        cy.contains(thirdBlog).parent().find('.blog__likes').should('include.text', 1);
+
+        cy.contains(secondBlog).parent().contains('like').click();
+        cy.contains(secondBlog).parent().find('.blog__likes').should('include.text', 1);
+        
+        cy.contains(secondBlog).parent().contains('like').click();
+        cy.contains(secondBlog).parent().find('.blog__likes').should('include.text', 2);
+
+        // check that blogs are in the correct order:
+        cy.get('.blog__all-details').eq(0).should('contain', secondBlog); // since it has 2 likes
+        cy.get('.blog__all-details').eq(1).should('contain', thirdBlog); // since it has 1 like
+        cy.get('.blog__all-details').eq(2).should('contain', firstBlog); // since it has 0 likes
       });
     });
   });
