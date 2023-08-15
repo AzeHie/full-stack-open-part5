@@ -90,6 +90,25 @@ describe('Blog app', function () {
         cy.wait(1000);
         cy.contains(blogTitle).should('not.exist');
       });
+
+      it.only('Remove button is visible only for the user who added the blog', function () {
+        cy.contains('Logout').click();
+
+        const secondUser = {
+          name: 'second user',
+          username: 'seconduser',
+          password: 'secondpass',
+        };
+
+        cy.request('POST', `${Cypress.env('BACKEND')}/users`, secondUser);
+
+        cy.login({ username: 'seconduser', password: 'secondpass' });
+
+        const blogTitle = 'second random';
+
+        cy.contains(blogTitle).contains('View').click();
+        cy.contains(blogTitle).parent().contains('Remove').should('not.exist');
+      });
     });
   });
 });
